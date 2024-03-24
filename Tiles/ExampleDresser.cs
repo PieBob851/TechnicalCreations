@@ -72,10 +72,6 @@ namespace TechnicalCreations.Tiles
 			left = i - left;
 			int top = j - Main.tile[i, j].TileFrameY / 18;
 
-            Main.NewText($"i, j: {i}, {j}.");
-            Main.NewText($"left: {left}.");
-            Main.NewText($"top: {top}.");
-            Main.NewText($"tileframe X,Y: {Main.tile[i, j].TileFrameX}, {Main.tile[i, j].TileFrameY}.");
 
             if (Main.tile[i, j].TileFrameY == 0) {
 				Main.CancelClothesWindow(true);
