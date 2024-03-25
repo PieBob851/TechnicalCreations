@@ -12,12 +12,14 @@ using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
+using TechnicalCreations.Helpers;
+
 namespace TechnicalCreations.UI
 {
     public class ScannerUI : BaseScanUI
     {
         private bool scanning, scanFirst, scanSecond;
-        private Rectangle selectTarget;
+        private Rectangle selectedTiles;
         public override void OnInitialize()
         {
             DraggableUIPanel panel = new DraggableUIPanel();
@@ -59,16 +61,16 @@ namespace TechnicalCreations.UI
             {
                 if (!scanFirst)
                 {
-                    selectTarget = new Rectangle(Player.tileTargetX, Player.tileTargetY, 0, 0);
+                    selectedTiles = new Rectangle(Player.tileTargetX, Player.tileTargetY, 0, 0);
                     scanFirst = true;
 
                     Main.NewText("First point set");
                 } else if (!scanSecond)
                 {
-                    Point16 topLeft = new Point16(Math.Min(Player.tileTargetX, selectTarget.X), Math.Min(Player.tileTargetY, selectTarget.Y));
-                    Point16 botRight = new Point16(Math.Max(Player.tileTargetX, selectTarget.X), Math.Max(Player.tileTargetY, selectTarget.Y));
+                    Point16 topLeft = new Point16(Math.Min(Player.tileTargetX, selectedTiles.X), Math.Min(Player.tileTargetY, selectedTiles.Y));
+                    Point16 botRight = new Point16(Math.Max(Player.tileTargetX, selectedTiles.X), Math.Max(Player.tileTargetY, selectedTiles.Y));
 
-                    selectTarget = new Rectangle(topLeft.X, topLeft.Y, botRight.X - topLeft.X, botRight.Y - topLeft.Y);
+                    selectedTiles = new Rectangle(topLeft.X, topLeft.Y, botRight.X - topLeft.X, botRight.Y - topLeft.Y);
 
                     scanSecond = true;
 
@@ -82,16 +84,7 @@ namespace TechnicalCreations.UI
         {
             if (scanSecond)
             {
-                for (int x = selectTarget.Left; x < selectTarget.Right; x++) { 
-                    for (int y = selectTarget.Top; y <  selectTarget.Bottom; y++) {
-                        Vector2 tilePosition = new Vector2(x * 16, y * 16);
-
-                        Dust.QuickDust(new Point(x, y), Color.Red);
-
-                        Main.spriteBatch.Draw(TextureAssets.Extra[2].Value, tilePosition, null,
-                            new Color(1, 1, 1, 0.4f), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                    }
-                }
+                Rectangle drawn = DrawHelpers.HighlightTiles(spriteBatch, selectedTiles);
             }
 
             base.Draw(spriteBatch);
