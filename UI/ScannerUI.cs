@@ -84,7 +84,13 @@ namespace TechnicalCreations.UI
         {
             if (scanSecond)
             {
+                spriteBatch.End();
+				spriteBatch.Begin(default, default, default, default, default, default, Main.GameViewMatrix.TransformationMatrix);
+
                 Rectangle drawn = DrawHelpers.HighlightTiles(spriteBatch, selectedTiles);
+
+                spriteBatch.End();
+                spriteBatch.Begin(default, default, default, default, default, default, Main.UIScaleMatrix);
             }
 
             base.Draw(spriteBatch);

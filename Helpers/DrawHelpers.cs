@@ -11,9 +11,9 @@ namespace TechnicalCreations.Helpers
     {
         public static Rectangle HighlightTiles(SpriteBatch spriteBatch, Rectangle tiles)
         {
-            int leftPos = tiles.X * 16 - (int)Main.screenPosition.X;
+            int leftPos = tiles.X * 16;
             int rightPos = leftPos + tiles.Width * 16;
-            int topPos = tiles.Y * 16 - (int)Main.screenPosition.Y;
+            int topPos = tiles.Y * 16;
             int bottomPos = topPos + tiles.Height * 16;
 
             Rectangle mainRectangle = new Rectangle(leftPos, topPos, rightPos - leftPos, bottomPos - topPos);
@@ -22,13 +22,18 @@ namespace TechnicalCreations.Helpers
             Rectangle topBorder = new Rectangle(leftPos, topPos, rightPos - leftPos, 2);
             Rectangle bottomBorder = new Rectangle(leftPos, bottomPos, rightPos - leftPos, 2);
 
-            Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, mainRectangle, Color.LightBlue * 0.1f);
-            Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, leftBorder, Color.Blue * 0.3f);
-            Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, rightBorder, Color.Blue * 0.3f);
-            Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, topBorder, Color.Blue * 0.3f);
-            Main.spriteBatch.Draw(TextureAssets.MagicPixel.Value, bottomBorder, Color.Blue * 0.3f);
+            mainRectangle.Offset((-Main.screenPosition).ToPoint());
+            leftBorder.Offset((-Main.screenPosition).ToPoint());
+            rightBorder.Offset((-Main.screenPosition).ToPoint());
+            topBorder.Offset((-Main.screenPosition).ToPoint());
+            bottomBorder.Offset((-Main.screenPosition).ToPoint());
 
-            //Main.NewText($"drawing at {leftPos}, {rightPos} and {topPos}, {bottomPos}");
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, mainRectangle, Color.LightBlue * 0.1f);
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, leftBorder, Color.Blue * 0.3f);
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, rightBorder, Color.Blue * 0.3f);
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, topBorder, Color.Blue * 0.3f);
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, bottomBorder, Color.Blue * 0.3f);
+
             return mainRectangle;
         }
     }
