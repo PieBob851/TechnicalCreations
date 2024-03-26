@@ -18,7 +18,8 @@ namespace TechnicalCreations.UI
 {
     public class ScannerUI : BaseScanUI
     {
-        private bool scanning, scanFirst, scanSecond;
+        private bool scanning, scanFirst, scanSecond, borderClicked;
+        private Border borderHovered;
         private Rectangle selectedTiles;
         public override void OnInitialize()
         {
@@ -70,7 +71,7 @@ namespace TechnicalCreations.UI
                     Point16 topLeft = new Point16(Math.Min(Player.tileTargetX, selectedTiles.X), Math.Min(Player.tileTargetY, selectedTiles.Y));
                     Point16 botRight = new Point16(Math.Max(Player.tileTargetX, selectedTiles.X), Math.Max(Player.tileTargetY, selectedTiles.Y));
 
-                    selectedTiles = new Rectangle(topLeft.X, topLeft.Y, botRight.X - topLeft.X, botRight.Y - topLeft.Y);
+                    selectedTiles = new Rectangle(topLeft.X, topLeft.Y, botRight.X - topLeft.X + 1, botRight.Y - topLeft.Y + 1);
 
                     scanSecond = true;
 
@@ -80,20 +81,96 @@ namespace TechnicalCreations.UI
             base.LeftClick(evt);
         }
 
+        public override void LeftMouseDown(UIMouseEvent evt)
+        {
+            base.LeftMouseDown(evt);
+            if (scanSecond && borderHovered != Border.None)
+            {
+                borderClicked = true;
+            }
+        }
+
+        public override void LeftMouseUp(UIMouseEvent evt)
+        {
+            base.LeftMouseUp(evt);
+            borderClicked = false;
+        }
+
         public override void Draw(SpriteBatch spriteBatch)
         {
-            if (scanSecond)
+            if (scanning && !scanFirst)
+            {
+                spriteBatch.End();
+                spriteBatch.Begin(default, default, default, default, default, default, Main.GameViewMatrix.TransformationMatrix);
+
+                DrawHelpers.HighlightTiles(spriteBatch, new Rectangle(Player.tileTargetX, Player.tileTargetY, 1, 1)) ;
+
+                spriteBatch.End();
+                spriteBatch.Begin(default, default, default, default, default, default, Main.UIScaleMatrix);
+            } else if (scanFirst && !scanSecond) 
+            {
+                spriteBatch.End();
+                spriteBatch.Begin(default, default, default, default, default, default, Main.GameViewMatrix.TransformationMatrix);
+
+                Point16 topLeft = new Point16(Math.Min(Player.tileTargetX, selectedTiles.X), Math.Min(Player.tileTargetY, selectedTiles.Y));
+                Point16 botRight = new Point16(Math.Max(Player.tileTargetX, selectedTiles.X), Math.Max(Player.tileTargetY, selectedTiles.Y));
+
+                DrawHelpers.HighlightTiles(spriteBatch, new Rectangle(topLeft.X, topLeft.Y, botRight.X - topLeft.X + 1, botRight.Y - topLeft.Y + 1));
+
+                spriteBatch.End();
+                spriteBatch.Begin(default, default, default, default, default, default, Main.UIScaleMatrix);
+            } else if (scanSecond)
             {
                 spriteBatch.End();
 				spriteBatch.Begin(default, default, default, default, default, default, Main.GameViewMatrix.TransformationMatrix);
 
-                Rectangle drawn = DrawHelpers.HighlightTiles(spriteBatch, selectedTiles);
+                DrawHelpers.HighlightTiles(spriteBatch, selectedTiles, borderHovered, borderClicked);
 
                 spriteBatch.End();
                 spriteBatch.Begin(default, default, default, default, default, default, Main.UIScaleMatrix);
             }
 
             base.Draw(spriteBatch);
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            if (borderClicked)
+            {
+                switch (borderHovered)
+                {
+                    case Border.Right:
+                        selectedTiles.Width = Player.tileTargetX - selectedTiles.X;
+                        break;
+                    case Border.Top:
+                        selectedTiles.Height += selectedTiles.Y - Player.tileTargetY;
+                        selectedTiles.Y = Player.tileTargetY;
+                        break;
+                    case Border.Left:
+                        selectedTiles.Width += selectedTiles.X - Player.tileTargetX;
+                        selectedTiles.X = Player.tileTargetX;
+                        break;
+                    case Border.Bottom:
+                        selectedTiles.Height = Player.tileTargetY - selectedTiles.Y;
+                        break;
+                }
+            } else if (Player.tileTargetX == selectedTiles.X + selectedTiles.Width && Player.tileTargetY >= selectedTiles.Y && Player.tileTargetY <= selectedTiles.Y + selectedTiles.Height)
+            {
+                borderHovered = Border.Right;
+            } else if (Player.tileTargetY == selectedTiles.Y && Player.tileTargetX >= selectedTiles.X && Player.tileTargetX <= selectedTiles.X + selectedTiles.Width)
+            {
+                borderHovered = Border.Top;
+            } else if (Player.tileTargetX == selectedTiles.X && Player.tileTargetY >= selectedTiles.Y && Player.tileTargetY <= selectedTiles.Y + selectedTiles.Height)
+            {
+                borderHovered = Border.Left;
+            } else if (Player.tileTargetY == selectedTiles.Y + selectedTiles.Height && Player.tileTargetX >= selectedTiles.X && Player.tileTargetX <= selectedTiles.X + selectedTiles.Width)
+            {
+                borderHovered = Border.Bottom;
+            } else
+            {
+                borderHovered = Border.None;
+            }
+            base.Update(gameTime);
         }
     }
 }

@@ -7,34 +7,61 @@ using ReLogic.Content;
 
 namespace TechnicalCreations.Helpers
 {
-    internal class DrawHelpers
+    public enum Border
     {
-        public static Rectangle HighlightTiles(SpriteBatch spriteBatch, Rectangle tiles)
+        Top,
+        Bottom, 
+        Left, 
+        Right,
+        None
+    }
+    public class DrawHelpers
+    {
+        public static void HighlightTiles(SpriteBatch spriteBatch, Rectangle tiles, Border borderHovered = Border.None, bool borderClicked = false)
         {
-            int leftPos = tiles.X * 16;
+            int leftPos = tiles.X * 16 - (int) Main.screenPosition.X;
             int rightPos = leftPos + tiles.Width * 16;
-            int topPos = tiles.Y * 16;
+            int topPos = tiles.Y * 16 - (int)Main.screenPosition.Y;
             int bottomPos = topPos + tiles.Height * 16;
 
-            Rectangle mainRectangle = new Rectangle(leftPos, topPos, rightPos - leftPos, bottomPos - topPos);
-            Rectangle leftBorder = new Rectangle(leftPos, topPos, 2, bottomPos - topPos);
+            Rectangle leftBorder = new Rectangle(leftPos - 2, topPos, 2, bottomPos - topPos);
             Rectangle rightBorder = new Rectangle(rightPos, topPos, 2, bottomPos - topPos);
-            Rectangle topBorder = new Rectangle(leftPos, topPos, rightPos - leftPos, 2);
+            Rectangle topBorder = new Rectangle(leftPos, topPos - 2, rightPos - leftPos, 2);
             Rectangle bottomBorder = new Rectangle(leftPos, bottomPos, rightPos - leftPos, 2);
 
-            mainRectangle.Offset((-Main.screenPosition).ToPoint());
-            leftBorder.Offset((-Main.screenPosition).ToPoint());
-            rightBorder.Offset((-Main.screenPosition).ToPoint());
-            topBorder.Offset((-Main.screenPosition).ToPoint());
-            bottomBorder.Offset((-Main.screenPosition).ToPoint());
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(leftPos, topPos, rightPos - leftPos, bottomPos - topPos), Color.White * 0.25f);
+            switch(borderHovered)
+            {
+                case Border.Right:
+                    rightBorder.X -= 2;
+                    rightBorder.Width += 4;
+                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(rightPos, topPos - 2, 2, 2), borderClicked ? Color.Yellow : Color.White);
+                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(rightPos, bottomPos, 2, 2), borderClicked ? Color.Yellow : Color.White);
+                    break;
+                case Border.Top:
+                    rightBorder.Y -= 2;
+                    rightBorder.Height += 4;
+                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(leftPos - 2, topPos, 2, 2), borderClicked ? Color.Yellow : Color.White);
+                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(rightPos, topPos, 2, 2), borderClicked ? Color.Yellow : Color.White);
+                    break;
+                case Border.Left:
+                    rightBorder.X -= 2;
+                    rightBorder.Width += 4;
+                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(leftPos, topPos - 2, 2, 2), borderClicked ? Color.Yellow : Color.White);
+                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(leftPos, bottomPos, 2, 2), borderClicked ? Color.Yellow : Color.White);
+                    break;
+                case Border.Bottom:
+                    rightBorder.Y -= 2;
+                    rightBorder.Height += 4;
+                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(leftPos - 2, bottomPos, 2, 2), borderClicked ? Color.Yellow : Color.White);
+                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(rightPos, bottomPos, 2, 2), borderClicked ? Color.Yellow : Color.White);
+                    break;
+            }
 
-            spriteBatch.Draw(TextureAssets.MagicPixel.Value, mainRectangle, Color.LightBlue * 0.1f);
-            spriteBatch.Draw(TextureAssets.MagicPixel.Value, leftBorder, Color.Blue * 0.3f);
-            spriteBatch.Draw(TextureAssets.MagicPixel.Value, rightBorder, Color.Blue * 0.3f);
-            spriteBatch.Draw(TextureAssets.MagicPixel.Value, topBorder, Color.Blue * 0.3f);
-            spriteBatch.Draw(TextureAssets.MagicPixel.Value, bottomBorder, Color.Blue * 0.3f);
-
-            return mainRectangle;
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, leftBorder, borderHovered == Border.Left ? borderClicked ? Color.Yellow : Color.White : Color.White * 0.75f);
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, rightBorder, borderHovered == Border.Right ? borderClicked ? Color.Yellow : Color.White : Color.White * 0.75f);
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, topBorder, borderHovered == Border.Top ? borderClicked ? Color.Yellow : Color.White : Color.White * 0.75f);
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, bottomBorder, borderHovered == Border.Bottom ? borderClicked ? Color.Yellow : Color.White : Color.White * 0.75f);
         }
     }
 }
