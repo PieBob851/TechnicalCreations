@@ -21,11 +21,15 @@ namespace TechnicalCreations.UI
         private bool scanning, scanFirst, scanSecond, borderClicked;
         private Border borderHovered;
         private Rectangle selectedTiles;
+
+        private UIPanel scanButton;
         public override void OnInitialize()
         {
             DraggableUIPanel panel = new DraggableUIPanel();
             panel.Width.Set(300, 0);
             panel.Height.Set(300, 0);
+            panel.VAlign = 0.6f;
+            panel.HAlign = 0.4f;
             Append(panel);
 
             UIText header = new UIText("My UI Header");
@@ -33,7 +37,7 @@ namespace TechnicalCreations.UI
             header.Top.Set(15, 0);
             panel.Append(header);
 
-            UIPanel scanButton = new UIPanel();
+            scanButton = new UIPanel();
             scanButton.Width.Set(100, 0);
             scanButton.Height.Set(50, 0);
             scanButton.HAlign = 0.5f;
@@ -52,21 +56,18 @@ namespace TechnicalCreations.UI
             scanning = !scanning;
             scanFirst = false;
             scanSecond = false;
-            Main.LocalPlayer.mouseInterface = scanning;
+            Main.LocalPlayer.mouseInterface = true;
         }
 
         public override void LeftClick(UIMouseEvent evt)
         {
-            Main.NewText($"Targeting {Player.tileTargetX}, {Player.tileTargetY}");
             if (scanning)
             {
-                if (!scanFirst)
+                if (!scanFirst && !scanButton.IsMouseHovering)
                 {
                     selectedTiles = new Rectangle(Player.tileTargetX, Player.tileTargetY, 0, 0);
                     scanFirst = true;
-
-                    Main.NewText("First point set");
-                } else if (!scanSecond)
+                } else if (scanFirst && !scanSecond)
                 {
                     Point16 topLeft = new Point16(Math.Min(Player.tileTargetX, selectedTiles.X), Math.Min(Player.tileTargetY, selectedTiles.Y));
                     Point16 botRight = new Point16(Math.Max(Player.tileTargetX, selectedTiles.X), Math.Max(Player.tileTargetY, selectedTiles.Y));
@@ -74,8 +75,6 @@ namespace TechnicalCreations.UI
                     selectedTiles = new Rectangle(topLeft.X, topLeft.Y, botRight.X - topLeft.X + 1, botRight.Y - topLeft.Y + 1);
 
                     scanSecond = true;
-
-                    Main.NewText("Second point set");
                 }
             }
             base.LeftClick(evt);
@@ -87,6 +86,7 @@ namespace TechnicalCreations.UI
             if (scanSecond && borderHovered != Border.None)
             {
                 borderClicked = true;
+                Main.LocalPlayer.mouseInterface = true;
             }
         }
 
@@ -137,40 +137,85 @@ namespace TechnicalCreations.UI
         {
             if (borderClicked)
             {
-                switch (borderHovered)
-                {
-                    case Border.Right:
-                        selectedTiles.Width = Player.tileTargetX - selectedTiles.X;
-                        break;
-                    case Border.Top:
-                        selectedTiles.Height += selectedTiles.Y - Player.tileTargetY;
-                        selectedTiles.Y = Player.tileTargetY;
-                        break;
-                    case Border.Left:
-                        selectedTiles.Width += selectedTiles.X - Player.tileTargetX;
-                        selectedTiles.X = Player.tileTargetX;
-                        break;
-                    case Border.Bottom:
-                        selectedTiles.Height = Player.tileTargetY - selectedTiles.Y;
-                        break;
-                }
+                DraggingBorder();
             } else if (Player.tileTargetX == selectedTiles.X + selectedTiles.Width && Player.tileTargetY >= selectedTiles.Y && Player.tileTargetY <= selectedTiles.Y + selectedTiles.Height)
             {
                 borderHovered = Border.Right;
-            } else if (Player.tileTargetY == selectedTiles.Y && Player.tileTargetX >= selectedTiles.X && Player.tileTargetX <= selectedTiles.X + selectedTiles.Width)
+                Main.LocalPlayer.mouseInterface = true;
+            } else if (Player.tileTargetY + 1== selectedTiles.Y && Player.tileTargetX >= selectedTiles.X && Player.tileTargetX <= selectedTiles.X + selectedTiles.Width)
             {
                 borderHovered = Border.Top;
-            } else if (Player.tileTargetX == selectedTiles.X && Player.tileTargetY >= selectedTiles.Y && Player.tileTargetY <= selectedTiles.Y + selectedTiles.Height)
+                Main.LocalPlayer.mouseInterface = true;
+            } else if (Player.tileTargetX + 1 == selectedTiles.X && Player.tileTargetY >= selectedTiles.Y && Player.tileTargetY <= selectedTiles.Y + selectedTiles.Height)
             {
                 borderHovered = Border.Left;
+                Main.LocalPlayer.mouseInterface = true;
             } else if (Player.tileTargetY == selectedTiles.Y + selectedTiles.Height && Player.tileTargetX >= selectedTiles.X && Player.tileTargetX <= selectedTiles.X + selectedTiles.Width)
             {
                 borderHovered = Border.Bottom;
+                Main.LocalPlayer.mouseInterface = true;
             } else
             {
                 borderHovered = Border.None;
             }
             base.Update(gameTime);
+        }
+
+        private void DraggingBorder()
+        {
+            switch (borderHovered)
+            {
+                case Border.Right:
+                    if (Player.tileTargetX < selectedTiles.X)
+                    {
+                        borderHovered = Border.Left;
+                        selectedTiles.Width = selectedTiles.X - Player.tileTargetX;
+                        selectedTiles.X = Player.tileTargetX + 1;
+                    }
+                    else if (Player.tileTargetX > selectedTiles.X)
+                    {
+                        selectedTiles.Width = Player.tileTargetX - selectedTiles.X;
+                    }
+                    break;
+                case Border.Top:
+                    if (Player.tileTargetY  + 1> selectedTiles.Y + selectedTiles.Height)
+                    {
+                        borderHovered = Border.Bottom;
+                        selectedTiles.Y = selectedTiles.Y + selectedTiles.Height - 1;
+                        selectedTiles.Height = Player.tileTargetY - selectedTiles.Y;
+                    }
+                    else if (Player.tileTargetY + 1 < selectedTiles.Y + selectedTiles.Height)
+                    {
+                        selectedTiles.Height += selectedTiles.Y - (Player.tileTargetY + 1);
+                        selectedTiles.Y = (Player.tileTargetY + 1);
+                    }
+                    break;
+                case Border.Left:
+                    if (Player.tileTargetX + 1> selectedTiles.X + selectedTiles.Width)
+                    {
+                        borderHovered = Border.Right;
+                        selectedTiles.X = selectedTiles.X + selectedTiles.Width - 1;
+                        selectedTiles.Width = Player.tileTargetX - selectedTiles.X;
+                    }
+                    else if (Player.tileTargetX + 1 < selectedTiles.X + selectedTiles.Width)
+                    {
+                        selectedTiles.Width += selectedTiles.X - (Player.tileTargetX + 1);
+                        selectedTiles.X = (Player.tileTargetX + 1);
+                    }
+                    break;
+                case Border.Bottom:
+                    if (Player.tileTargetY < selectedTiles.Y)
+                    {
+                        borderHovered = Border.Top;
+                        selectedTiles.Height = selectedTiles.Y - Player.tileTargetY;
+                        selectedTiles.Y = Player.tileTargetY + 1;
+                    }
+                    else if (Player.tileTargetY > selectedTiles.Y)
+                    {
+                        selectedTiles.Height = Player.tileTargetY - selectedTiles.Y;
+                    }
+                    break;
+            }
         }
     }
 }

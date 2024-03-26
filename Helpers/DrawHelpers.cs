@@ -39,20 +39,20 @@ namespace TechnicalCreations.Helpers
                     spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(rightPos, bottomPos, 2, 2), borderClicked ? Color.Yellow : Color.White);
                     break;
                 case Border.Top:
-                    rightBorder.Y -= 2;
-                    rightBorder.Height += 4;
-                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(leftPos - 2, topPos, 2, 2), borderClicked ? Color.Yellow : Color.White);
-                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(rightPos, topPos, 2, 2), borderClicked ? Color.Yellow : Color.White);
+                    topBorder.Y -= 2;
+                    topBorder.Height += 4;
+                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(leftPos - 2, topPos - 2, 2, 2), borderClicked ? Color.Yellow : Color.White);
+                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(rightPos, topPos - 2, 2, 2), borderClicked ? Color.Yellow : Color.White);
                     break;
                 case Border.Left:
-                    rightBorder.X -= 2;
-                    rightBorder.Width += 4;
-                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(leftPos, topPos - 2, 2, 2), borderClicked ? Color.Yellow : Color.White);
-                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(leftPos, bottomPos, 2, 2), borderClicked ? Color.Yellow : Color.White);
+                    leftBorder.X -= 2;
+                    leftBorder.Width += 4;
+                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(leftPos - 2, topPos - 2, 2, 2), borderClicked ? Color.Yellow : Color.White);
+                    spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(leftPos - 2, bottomPos, 2, 2), borderClicked ? Color.Yellow : Color.White);
                     break;
                 case Border.Bottom:
-                    rightBorder.Y -= 2;
-                    rightBorder.Height += 4;
+                    bottomBorder.Y -= 2;
+                    bottomBorder.Height += 4;
                     spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(leftPos - 2, bottomPos, 2, 2), borderClicked ? Color.Yellow : Color.White);
                     spriteBatch.Draw(TextureAssets.MagicPixel.Value, new Rectangle(rightPos, bottomPos, 2, 2), borderClicked ? Color.Yellow : Color.White);
                     break;
