@@ -4,6 +4,7 @@ using Terraria.GameContent;
 using Terraria;
 using Microsoft.Xna.Framework;
 using ReLogic.Content;
+using Terraria.DataStructures;
 
 namespace TechnicalCreations.Helpers
 {
@@ -62,6 +63,31 @@ namespace TechnicalCreations.Helpers
             spriteBatch.Draw(TextureAssets.MagicPixel.Value, rightBorder, borderHovered == Border.Right ? borderClicked ? Color.Yellow : Color.White : Color.White * 0.75f);
             spriteBatch.Draw(TextureAssets.MagicPixel.Value, topBorder, borderHovered == Border.Top ? borderClicked ? Color.Yellow : Color.White : Color.White * 0.75f);
             spriteBatch.Draw(TextureAssets.MagicPixel.Value, bottomBorder, borderHovered == Border.Bottom ? borderClicked ? Color.Yellow : Color.White : Color.White * 0.75f);
+        }
+
+        public static void ColorTile(SpriteBatch spriteBatch, Point16 tile, Color color)
+        {
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, 
+                            new Rectangle(tile.X * 16 - (int)Main.screenPosition.X, tile.Y * 16 - (int)Main.screenPosition.Y, 16, 16), 
+                            color);
+        }
+
+        public static void DrawBorder(SpriteBatch spriteBatch, Rectangle tiles)
+        {
+            int leftPos = tiles.X * 16 - (int)Main.screenPosition.X;
+            int rightPos = leftPos + tiles.Width * 16;
+            int topPos = tiles.Y * 16 - (int)Main.screenPosition.Y;
+            int bottomPos = topPos + tiles.Height * 16;
+
+            Rectangle leftBorder = new Rectangle(leftPos - 2, topPos, 2, bottomPos - topPos);
+            Rectangle rightBorder = new Rectangle(rightPos, topPos, 2, bottomPos - topPos);
+            Rectangle topBorder = new Rectangle(leftPos, topPos - 2, rightPos - leftPos, 2);
+            Rectangle bottomBorder = new Rectangle(leftPos, bottomPos, rightPos - leftPos, 2);
+
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, leftBorder, Color.White * 0.75f);
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, rightBorder, Color.White * 0.75f);
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, topBorder, Color.White * 0.75f);
+            spriteBatch.Draw(TextureAssets.MagicPixel.Value, bottomBorder, Color.White * 0.75f);
         }
     }
 }

@@ -67,6 +67,18 @@ namespace TechnicalCreations.UI
                     },
                     InterfaceScaleType.UI)
                 );
+
+                layers.Insert(mouseTextIndex, new LegacyGameInterfaceLayer(
+                    "TechnicalCreations: GameInterfaceLayer",
+                    delegate {
+                        if (baseUI?.CurrentState != null)
+                        {
+                            ((BaseScanUI)baseUI.CurrentState).DrawToGame(Main.spriteBatch);
+                        }
+                        return true;
+                    },
+                    InterfaceScaleType.Game)
+                );
             }
         }
     }

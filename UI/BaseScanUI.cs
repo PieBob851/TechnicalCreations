@@ -14,5 +14,6 @@ namespace TechnicalCreations.UI
 {
     public class BaseScanUI : UIState
     {
+        public virtual void DrawToGame(SpriteBatch spriteBatch) { }
     }
 }
